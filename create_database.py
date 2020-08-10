@@ -1,6 +1,4 @@
 """
-Docstring for the create_database.py module.
-
 """
 
 import paramiko
@@ -25,7 +23,9 @@ class StartDBConnection():
     Methods
     -------
     create_database()
+        Creates a database with the desired name.
     create_first_view()
+        Initializes the database by adding the first design document.
 
     Raises
     ------
@@ -58,6 +58,7 @@ class StartDBConnection():
         ----------
         ssh : class
             The instance of SSHClient that's maintaining the ssh connection
+
         Returns
         -------
         int

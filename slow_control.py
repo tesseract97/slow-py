@@ -1,5 +1,4 @@
 """
-Docstring for the slow_control.py module.
 
 """
 
@@ -11,7 +10,7 @@ import csv
 
 class SlowControlDBConnection:
     """
-    Connecting and storing climate data to a slow control databasedatabase.
+    Connecting and storing climate data to a slow control database.
 
     The constructor uses the Paramiko package to make an SSH connection to the LOLX computer
     so all curl commands can be run locally. Then it checks for a data csv file in the project
@@ -33,13 +32,13 @@ class SlowControlDBConnection:
     Methods
     -------
     csv_to_json()
-        Create a JSON file from a csv in the project folder.
+        Creates a JSON file from a csv in the project folder.
     format_and_make_string()
-        Format the JSON file and convert to string for upload.
+        Formats the JSON file and convert to string for upload.
     write_to_database_with_data_string()
-        Send the JSON string to the specified database.
+        Sends the JSON string to the specified database.
     clean_up_directory()
-        Delete the JSON and CSV files in order to avoid duplication of data.
+        Deletes the JSON and CSV files in order to avoid duplication of data.
     DesignDocs()
         Calls the DesignDocs class to write view statements.
 
@@ -83,11 +82,11 @@ class SlowControlDBConnection:
         self.json_file_path : str
             The name to assign to the data once it's been converted from csv to json
             (The default is 'west_island_update.json')
+
         Returns
         -------
         int
             Non-zero value indicates error code.
-
 
         Notes
         -----
@@ -125,7 +124,8 @@ class SlowControlDBConnection:
         self.json_file_path : str
             The name of the json file
         error_code: int
-            Non-zero value indicates, there is no CSV to take from
+            Non-zero value indicates that there is no CSV to take from
+
         Returns
         -------
         str
@@ -139,7 +139,7 @@ class SlowControlDBConnection:
         The command string is formatted with escape characters, so that quotation marks remain.
 
         Right now, all data fields are written to the database as strings.
-        TODO Change data field type
+
 
         """
         if error_code == 0:
@@ -169,7 +169,8 @@ class SlowControlDBConnection:
         data: str
             The formatted string that came from the JSON file
         self.database_name: str
-            The name of the database to be written to
+            The name of the desired database.
+
         Returns
         -------
         int
@@ -180,7 +181,7 @@ class SlowControlDBConnection:
         The CouchDB bulk docs API makes it possible to write as many documents to the database as desired
 
         The credentials for the database are built into the curl command allowing the process to be automated
-        TODO add return 0 and 2 for stdout vs stderr
+
         """
 
         database = self.database_name
@@ -300,6 +301,7 @@ class DesignDocs:
             The reader object that has taken all the headings of the CSV file
         ssh: class
             The instance of SSHClient that's maintaining the ssh connection
+
         Returns
         -------
         missing_views: iterable
@@ -355,7 +357,6 @@ class DesignDocs:
         The commented line in the first paragraph was formatting specifically for the test data I was using,
         isn't necessary in a CSV that follows specifications in the README.md
 
-        TODO Add ints for 0, 1, 2
         """
 
         database = self.database_name

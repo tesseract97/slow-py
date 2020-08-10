@@ -3,18 +3,45 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to SlowControlDB's documentation!
+SlowControlDB Documentation
 =========================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+Create Your Database
+====================
+.. automodule:: create_database
+.. autoclass:: StartDBConnection
+   :members:
 
+Use Your Database
+=================
+.. automodule:: slow_control
+.. autoclass:: SlowControlDBConnection
+   :members:
 
-Indices and tables
+View Your Database
 ==================
+.. autoclass:: DesignDocs
+   :members:
 
+
+
+
+
+Index
+======
+
+General Index
+-------------
 * :ref:`genindex`
+
+Module Index
+------------
 * :ref:`modindex`
+
+Search
+------
 * :ref:`search`
