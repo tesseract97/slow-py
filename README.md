@@ -12,16 +12,15 @@ You've done it!
 
 **Second Step: Understand Input CSV File Specifications**
 
-- each line of the CSV is one datapoint and each comma separated value is an attribute of the datapoint
-- the first line of CSV must be the names of all the attributes being recorded (ex. timestamp, temperature, pressure)
-- within the CSV, each comma separated value corresponds to the name specified in the first line
-- attributes can be left blank, there just must be a space left for them in the csv (ex. 1,2,3,,4,5)
-- one of the headers must be called "timestamp"
-- upper limit of 4300 arguments (number of lines multiplied by number of values in the first line of the CSV)
-- if the upper limit is respected, the script can handle any combination of number of lines and names of attributes
-- no attribute name can be '_id'
-- there must be consistency within each CSV file, but the next CSV file can have datapoints with completely different attributes as long as the "timestamp" specification is respected
-- timestamp has been defined as Java regulated timestamp (ex. yyyy-mm-dd hh:mm:ss)
+- Store the CSV in the same directory as slow_control.py
+- Write names of attributes in the first line of the CSV as headers. Every other line should contain values of attributes
+- Don't exceed 4300 arguments in a single CSV (total number of values and headers)
+
+- One of the attributes must be named "timestamp"
+- The values for "timestamp must follow this format: yyyy-mm-dd hh:mm:ss
+- Fields can be left blank, there just must be a space left for them in the csv (ex. 1,2,3,,4,5)
+- CSVs with different headers/ number of columns/ number of rows can be entered into the same database as long as they all have "timestamp"
+
 
 *Example CSV File*
 
@@ -33,11 +32,16 @@ You've done it!
 
 **Third Step: Make the Code Your Own** 
 
-The very last line slow_control.py (pictured below) has two string parameters. The first is the database name and the second is the name of the CSV file that data will be coming from. If you're using the original slow_control specifications, don't change it! But if you're storing data in a different database, change the first parameter to the name of the database you created in Step 1. Change the second parameter to the name of the CSV file you formatted in Step 2. 
+- Take slow_control.py
+- If you're sending data to slowcontroldb, make no changes
+- If you're sending data to a different database, change the first parameter in line 382 to the name of your database
+- Change the second parameter in line 382 to the name of your CSV file.
+- Run slow_control.py
+
 
 ![LastLine](https://user-images.githubusercontent.com/47134315/89677931-49b0db80-d8bc-11ea-95b0-ee00a25fbf2e.png)
 
-You're ready to record data!
+You're recording data!
 
 
 
