@@ -43,6 +43,14 @@ You've done it!
 
 You're recording data!
 
+**Numpy Documentation of Code**
+
+For documentation of code:
+- Open \_build
+- Open html
+- Open output of index.html in Browser
+
+You're looking at it!
 
 
 **Retrieving Data**
@@ -60,8 +68,6 @@ This is how it's possible to graph the data or simply return all the values for 
 Code for both of these is COMING SOON (being finalized as we speak)
 
 
-**Numpy Documentation of Code**
 
-Instructions TBD
 
 
