@@ -112,5 +112,5 @@ class StartDBConnection():
 
 
 if __name__ == '__main__':
-    StartDBConnection("test")
+    StartDBConnection("west_island_climate_data")
 

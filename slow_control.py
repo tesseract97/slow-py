@@ -369,7 +369,7 @@ class DesignDocs:
             final = json.dumps(json_new_view)
 
             command = 'curl -X PUT -H "Content-Type: application/json" http://admin:x3n0ntpc@127.0.0.1:5984/'
-            command2 = database + command + '/_design/' + new_view
+            command2 = command + database + '/_design/' + new_view
             command3 = command2 + " -d '" + final + "'"
 
             stdin, stdout, stderr = ssh.exec_command(command3, get_pty=True)
