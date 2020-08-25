@@ -78,7 +78,7 @@ def record_data_from_csv(database_name, csv_file):
                     clean_up = False
             print("Data successfully recorded and indexed")
             if clean_up == True:
-                data.cleanup_directory(csv_file, json_file_path="west_island_update.json")
+                data.cleanup_directory(csv_file, json_file_path="slow_control.json")
         ssh_disconnect(ssh)
     except paramiko.ssh_exception.SSHException:
         return 1
