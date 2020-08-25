@@ -247,8 +247,13 @@ class DesignDocs:
     Methods
     -------
     find_view_names()
+        Finds all header names in the data CSV.
     return_views()
+        Cross checks the output of find_view_names() against all
+        design documents in the database and returns missing ones.
     create_views()
+        Creates design documents with view functions for the new
+        headers.
     """
 
     def __init__(self, ssh, database_name, data_file_path):
