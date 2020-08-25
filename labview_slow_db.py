@@ -88,4 +88,4 @@ def record_data_from_csv(database_name, csv_file):
 
 if __name__ == '__main__':
     create_database("Hello_World")
-    record_data_from_csv("hello_world", "climate_data.csv")
+    record_data_from_csv("hello_world", "slow_control.csv")
