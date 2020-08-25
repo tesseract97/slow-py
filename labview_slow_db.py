@@ -1,7 +1,7 @@
 import paramiko
 import json
 
-import lolx_test as data
+import slow_control as data
 import create_database as create
 import design_docs as design
 
