@@ -67,7 +67,7 @@ def create_database(database_name):
         return 1
 
 
-def record_data_from_csv(database_name, csv_file, abs_file_path):
+def record_data_from_csv(database_name, csv_file, abs_file_path, conflict_dir):
     json_file_path = os.path.splitext(csv_file)[0] + ".json"
     data_command = methods.write_to_database(methods.format_and_make_string
                                              (methods.csv_to_json
@@ -75,7 +75,7 @@ def record_data_from_csv(database_name, csv_file, abs_file_path):
     headers = methods.find_view_names(abs_file_path, csv_file)
     if data_command == 1 or headers == 1:
         print("The CSV file can't be found")
-        methods.cleanup_directory(csv_file, json_file_path, 1)
+        methods.cleanup_directory(csv_file, json_file_path, conflict_dir, 1)
         return 1
     try:
         ssh = ssh_connect()
@@ -85,7 +85,7 @@ def record_data_from_csv(database_name, csv_file, abs_file_path):
             all_view_commands = methods.create_views(missing_views, database_name)
             if all_view_commands == 0:
                 print("Data successfully recorded and indexed")
-                methods.cleanup_directory(csv_file, json_file_path, 0)
+                methods.cleanup_directory(csv_file, json_file_path, conflict_dir, 0)
             else:
                 clean_up = True
                 for command in all_view_commands:
@@ -93,11 +93,11 @@ def record_data_from_csv(database_name, csv_file, abs_file_path):
                         clean_up = False
                 if clean_up:
                     print("Data successfully recorded and indexed")
-                    methods.cleanup_directory(csv_file, json_file_path, 0)
+                    methods.cleanup_directory(csv_file, json_file_path, conflict_dir, 0)
                 else:
-                    methods.cleanup_directory(csv_file, json_file_path, 1)
+                    methods.cleanup_directory(csv_file, json_file_path, conflict_dir, 1)
         else:
-            methods.cleanup_directory(csv_file, json_file_path, 1)
+            methods.cleanup_directory(csv_file, json_file_path, conflict_dir, 1)
         ssh_disconnect(ssh)
     except paramiko.ssh_exception.SSHException:
         return 1
@@ -105,4 +105,4 @@ def record_data_from_csv(database_name, csv_file, abs_file_path):
 
 if __name__ == '__main__':
     create_database("lucas_test")
-    record_data_from_csv("lucas_test", "Lucas_data.csv", "/Users/tessacondon/Lucas_data.csv")
+    record_data_from_csv("lucas_test", "Lucas_data.csv", "/Users/tessacondon/Lucas_data.csv", "/Users/tessacondon/crash")
