@@ -67,12 +67,12 @@ def create_database(database_name):
         return 1
 
 
-def record_data_from_csv(database_name, csv_file):
+def record_data_from_csv(database_name, csv_file, abs_file_path):
     json_file_path = os.path.splitext(csv_file)[0] + ".json"
     data_command = methods.write_to_database(methods.format_and_make_string
                                              (methods.csv_to_json
-                                              (csv_file, json_file_path), json_file_path), database_name)
-    headers = methods.find_view_names(csv_file)
+                                              (abs_file_path, json_file_path), json_file_path), database_name)
+    headers = methods.find_view_names(abs_file_path, csv_file)
     if data_command == 1 or headers == 1:
         print("The CSV file can't be found")
         methods.cleanup_directory(csv_file, json_file_path, 1)
@@ -104,5 +104,5 @@ def record_data_from_csv(database_name, csv_file):
 
 
 if __name__ == '__main__':
-    create_database("Hello_World")
-    record_data_from_csv("hello_world", "climate_data.csv")
+    create_database("lucas_test")
+    record_data_from_csv("lucas_test", "Lucas_data.csv", "/Users/tessacondon/Lucas_data.csv")

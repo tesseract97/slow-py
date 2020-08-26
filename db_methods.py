@@ -56,7 +56,7 @@ def create_first_view(database_name):
 # DESIGN
 
 
-def find_view_names(data_file_path):
+def find_view_names(abs_path, data_file_path):
     """
     All CSV headings are returned, so that they can be cross referenced with the view functions
     of the design documents of the database.
@@ -73,13 +73,11 @@ def find_view_names(data_file_path):
     headers : object
         The reader object that has taken all the headings of the CSV file
     """
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    csv_file_path = dir_path + "/" + data_file_path
-    if os.path.exists(csv_file_path):
-        with open(csv_file_path, encoding='utf-8-sig') as csv_file:
-            csv_reader = csv.reader(csv_file)
-            headers = next(csv_reader)
 
+    if os.path.exists(abs_path):
+        with open(abs_path, encoding='utf-8-sig') as csv_file:
+            csv_reader = csv.reader(filter(lambda row: row[0] !='#', csv_file))
+            headers = next(csv_reader)
         return headers
     else:
         return 1
@@ -174,7 +172,7 @@ def create_views(missing_views, database):
 # DATA
 
 
-def csv_to_json(data_file_path, json_file_path):
+def csv_to_json(abs_file_path, json_file_path):
     """
     Converts the CSV of data to a JSON file with the intention of writing the JSON directly to the
     desired database.
@@ -206,12 +204,12 @@ def csv_to_json(data_file_path, json_file_path):
     """
     data = []
 
-    dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_path = os.path.dirname(abs_file_path)
     os.chmod(dir_path, 0o777)
-    csv_file_path = dir_path + "/" + data_file_path
+    csv_file_path = abs_file_path
     if os.path.isfile(csv_file_path):
         with open(csv_file_path, encoding='utf-8-sig') as csv_file:
-            csv_reader = csv.DictReader(csv_file)
+            csv_reader = csv.DictReader(filter(lambda row: row[0] !='#', csv_file))
             for rows in csv_reader:
                 rows['_id'] = rows.get('timestamp')
                 data.append(rows)
@@ -314,18 +312,13 @@ def cleanup_directory(data_file_path, json_file_path, error_code):
 
     json_file = json_file_path
     if os.path.exists(json_file):
-        os.remove(json_file)
+        #os.remove(json_file)
         print("JSON deleted")
     else:
         print("JSON already deleted")
 
     if error_code == 0:
-        csv_file = data_file_path
-        if os.path.exists(csv_file):
-            os.remove(csv_file)
-            print("CSV deleted")
-        else:
-            print("CSV already deleted")
+        print("No conflicts")
     else:
         if os.path.exists(data_file_path):
             new_name = os.path.splitext(data_file_path)[0] + "_conflict.csv"
