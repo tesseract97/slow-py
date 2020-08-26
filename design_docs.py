@@ -58,9 +58,8 @@ def return_existing_views(ssh, database):
     stdin, stdout, stderr = ssh.exec_command(command, get_pty=True)
     views = []
     for line in stdout.readlines()[1:-1]:
-        comma_index = line.index(",")
-        print(type(comma_index))
-        kept = line[0, comma_index]
+        comma_index = line.index("value")
+        kept = line[0:(comma_index-2)] + "}"
         views.append(json.loads(kept)["id"][8:])
     return views
 
@@ -103,6 +102,9 @@ def create_views(missing_views, database):
     isn't necessary in a CSV that follows specifications in the README.md
 
     """
+    if missing_views ==0:
+        print("All views have design documents")
+        return 0
 
     view_commands = []
     for new_view in missing_views:
