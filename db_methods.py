@@ -296,7 +296,7 @@ def write_to_database(data, database_name):
     return command
 
 
-def cleanup_directory(data_file_path, json_file_path, error_code):
+def cleanup_directory(data_file_path, json_file_path, conflict_file_directory, error_code):
     """
     Cleans up the directory by deleting all files where data has already been stored.
 
@@ -312,7 +312,7 @@ def cleanup_directory(data_file_path, json_file_path, error_code):
 
     json_file = json_file_path
     if os.path.exists(json_file):
-        #os.remove(json_file)
+        os.remove(json_file)
         print("JSON deleted")
     else:
         print("JSON already deleted")
@@ -321,7 +321,7 @@ def cleanup_directory(data_file_path, json_file_path, error_code):
         print("No conflicts")
     else:
         if os.path.exists(data_file_path):
-            new_name = os.path.splitext(data_file_path)[0] + "_conflict.csv"
+            new_name = conflict_file_directory + "/" + os.path.splitext(data_file_path)[0] + "_conflict.csv"
             os.renames(data_file_path, new_name)
             print("CSV renamed")
         else:
