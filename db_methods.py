@@ -76,7 +76,7 @@ def find_view_names(data_file_path):
     dir_path = os.path.dirname(os.path.realpath(__file__))
     csv_file_path = dir_path + "/" + data_file_path
     if os.path.exists(csv_file_path):
-        with open(csv_file_path, encoding='utf-8-sig') as csv_file:
+        with open(csv_file_path) as csv_file:
             csv_reader = csv.reader(csv_file)
             headers = next(csv_reader)
 
