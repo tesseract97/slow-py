@@ -80,7 +80,7 @@ def find_view_names(data_file_path):
         with io.open(csv_file_path, encoding='utf-8-sig') as csv_file:
             csv_reader = csv.reader(csv_file)
             headers = next(csv_reader)
-
+            csv_file.close()
         return headers
     else:
         return 1
@@ -218,6 +218,8 @@ def csv_to_json(data_file_path, json_file_path):
                 data.append(rows)
         with open(json_file_path, 'w') as json_file:
             json_file.write(json.dumps(data, indent=4))
+            csv_file.close()
+            json_file.close()
             return 0
     return 1
 
@@ -260,6 +262,7 @@ def format_and_make_string(code, json_file_path):
             data_string["docs"].append(rows)
 
         string = str(data_string).replace("'", "\"").replace('"', '\\"')
+        f.close()
         return '"' + string + '"'
     else:
         return ""
