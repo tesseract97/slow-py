@@ -1,6 +1,7 @@
 import os
 import json
 import csv
+import io
 
 # CREATE
 
@@ -76,7 +77,7 @@ def find_view_names(data_file_path):
     dir_path = os.path.dirname(os.path.realpath(__file__))
     csv_file_path = dir_path + "/" + data_file_path
     if os.path.exists(csv_file_path):
-        with open(csv_file_path) as csv_file:
+        with io.open(csv_file_path, encoding='utf-8-sig') as csv_file:
             csv_reader = csv.reader(csv_file)
             headers = next(csv_reader)
 
@@ -210,7 +211,7 @@ def csv_to_json(data_file_path, json_file_path):
     os.chmod(dir_path, 0o777)
     csv_file_path = dir_path + "/" + data_file_path
     if os.path.isfile(csv_file_path):
-        with open(csv_file_path) as csv_file:
+        with io.open(csv_file_path, encoding='utf-8-sig') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for rows in csv_reader:
                 rows['_id'] = rows.get('timestamp')
