@@ -332,6 +332,7 @@ def cleanup_directory(data_file_path, json_file_path, error_code):
     else:
         if os.path.exists(data_file_path):
             new_name = os.path.splitext(data_file_path)[0] + "_conflict.csv"
+            os.close(data_file_path)
             os.renames(data_file_path, new_name)
             print("CSV renamed")
         else:
