@@ -80,9 +80,11 @@ def record_data_from_csv(database_name, csv_file):
     try:
         ssh = ssh_connect()
         existing_views = methods.return_existing_views(ssh, database_name)
+        #return existing_views
         missing_views = methods.compare_views(headers, existing_views)
+        #return missing views
+        #return ssh_execute(ssh, data_command)
         if ssh_execute(ssh, data_command) < 2:
-            return 0
             print("Data successfully recorded")
             all_view_commands = methods.create_views(missing_views, database_name)
             if all_view_commands == 0:
@@ -100,10 +102,12 @@ def record_data_from_csv(database_name, csv_file):
                     methods.cleanup_directory(csv_file, json_file_path, 0)
                 else:
                     print("View creation unsuccessful, a new conflict document is being created.")
+                    return "View creation unsuccessful"
                     methods.cleanup_directory(csv_file, json_file_path, 1)
         else:
             return 2
             print("Data recording unsuccessful, a new conflict document is being created.")
+            return "Data recording unsuccessful"
             methods.cleanup_directory(csv_file, json_file_path, 1)
         ssh_disconnect(ssh)
     except paramiko.ssh_exception.SSHException:
