@@ -121,7 +121,7 @@ def return_existing_views(ssh, database):
 def compare_views(headers, db_views):
     if set(headers).issubset(set(db_views)):
         print("Success")
-        return 0
+        return []
     else:
         s = dict()
         for i in range(len(db_views)):
@@ -155,9 +155,9 @@ def create_views(missing_views, database):
     isn't necessary in a CSV that follows specifications in the README.md
 
     """
-    if missing_views == 0:
+    if missing_views == []:
         print("All views have design documents")
-        return 0
+        return ""
 
     view_commands = []
     for new_view in missing_views:
