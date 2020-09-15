@@ -210,7 +210,7 @@ def csv_to_json(data_file_path, json_file_path):
     os.chmod(dir_path, 0o777)
     csv_file_path = dir_path + "/" + data_file_path
     if os.path.isfile(csv_file_path):
-        with open(csv_file_path, encoding='utf-8-sig') as csv_file:
+        with open(csv_file_path) as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for rows in csv_reader:
                 rows['_id'] = rows.get('timestamp')
