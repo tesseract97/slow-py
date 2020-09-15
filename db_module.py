@@ -82,6 +82,7 @@ def record_data_from_csv(database_name, csv_file):
         existing_views = methods.return_existing_views(ssh, database_name)
         missing_views = methods.compare_views(headers, existing_views)
         if ssh_execute(ssh, data_command) < 2:
+            return 0
             print("Data successfully recorded")
             all_view_commands = methods.create_views(missing_views, database_name)
             if all_view_commands == 0:
@@ -101,6 +102,7 @@ def record_data_from_csv(database_name, csv_file):
                     print("View creation unsuccessful, a new conflict document is being created.")
                     methods.cleanup_directory(csv_file, json_file_path, 1)
         else:
+            return 2
             print("Data recording unsuccessful, a new conflict document is being created.")
             methods.cleanup_directory(csv_file, json_file_path, 1)
         ssh_disconnect(ssh)
