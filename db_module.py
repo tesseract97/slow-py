@@ -28,21 +28,22 @@ def ssh_execute(ssh, command):
         if result_key == "error":
             if result[result_key] == "file_exists":
                 print("Document already exists")
-                return 1
+                return "Document already exists"
             if result[result_key] == "conflict":
                 print("Conflict with document")
-                return 1
+                return "Conflict with document"
             if result[result_key] == "not_found":
                 print("Database must be created")
-                return 1
+                return "Database must be created"
             if result[result_key] == "compilation_error":
                 print("Check the header names in your CSV file and see if they follow convention")
-                return 1
+                return "Check the header names in your CSV file and see if they follow convention"
             else:
                 print("Error: ", result[result_key])
-                return 2
+                return "Error" + result[result_key]
         else:
             print("An unknown error has occurred: ", result)
+            # return "An unknown error has occurred: " + result
             return 2
 
 

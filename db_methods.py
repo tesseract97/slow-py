@@ -219,8 +219,8 @@ def csv_to_json(data_file_path, json_file_path):
             json_file.write(json.dumps(data, indent=4))
             json_file.close()
             csv_file.close()
-            return 0
-    return 1
+            return "File does exist"
+    return "File doesn't exist"
 
 
 def format_and_make_string(code, json_file_path):
@@ -252,7 +252,7 @@ def format_and_make_string(code, json_file_path):
 
     Right now, all data fields are written to the database as strings.
     """
-    if code == 0:
+    if code == "File does exist":
 
         f = open(json_file_path)
         data = json.load(f)
@@ -264,7 +264,7 @@ def format_and_make_string(code, json_file_path):
         f.close()
         return '"' + string + '"'
     else:
-        return ""
+        return "File doesn't exist"
 
 
 def write_to_database(data, database_name):
@@ -293,8 +293,8 @@ def write_to_database(data, database_name):
     """
 
     database = database_name
-    if data == "":
-        return 1
+    if data == "File doesn't exist":
+        return "File doesn't exist"
 
     command = 'curl -X POST http://admin:x3n0ntpc@127.0.0.1:5984//_bulk_docs -d  -H "Content-Type: application/json"'
     command = command[:50] + database + command[50:65] + data + command[65:]
