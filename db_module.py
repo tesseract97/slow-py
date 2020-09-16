@@ -29,26 +29,20 @@ def ssh_execute(ssh, command):
             if result[result_key] == "file_exists":
                 print("Document already exists")
                 return 1
-                #return "Document already exists"
             if result[result_key] == "conflict":
                 print("Conflict with document")
                 return 1
-                #return "Conflict with document"
             if result[result_key] == "not_found":
                 print("Database must be created")
                 return 1
-                #return "Database must be created"
             if result[result_key] == "compilation_error":
                 print("Check the header names in your CSV file and see if they follow convention")
                 return 1
-                #return "Check the header names in your CSV file and see if they follow convention"
             else:
                 print("Error: ", result[result_key])
-                return 1
-                #return "Error" + result[result_key]
+                return 2
         else:
             print("An unknown error has occurred: ", result)
-            # return "An unknown error has occurred: " + result
             return 2
 
 
@@ -70,14 +64,15 @@ def create_database(database_name):
                 print("Successful creation and initialization of database")
         ssh_disconnect(ssh)
     except paramiko.ssh_exception.SSHException:
-        return 1
+        return str(1)
 
 
 def record_data_from_csv(database_name, csv_file):
-    json_file_path = os.path.splitext(csv_file)[0] + ".json"
-    data_command = methods.write_to_database(methods.format_and_make_string
-                                             (methods.csv_to_json
-                                              (csv_file, json_file_path), json_file_path), database_name)
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    json_file_path = dir_path + "\\" + os.path.splitext(csv_file)[0] + ".json"
+    json_file = methods.csv_to_json(csv_file, json_file_path)
+    data = methods.format_and_make_string(json_file, json_file_path)
+    data_command = methods.write_to_database(data, database_name)
     headers = methods.find_view_names(csv_file)
     if data_command == 1 or headers == 1:
         print("The CSV file can't be found")
@@ -86,10 +81,7 @@ def record_data_from_csv(database_name, csv_file):
     try:
         ssh = ssh_connect()
         existing_views = methods.return_existing_views(ssh, database_name)
-        #return existing_views
         missing_views = methods.compare_views(headers, existing_views)
-        #return missing views
-        #return ssh_execute(ssh, data_command)
         if ssh_execute(ssh, data_command) < 2:
             print("Data successfully recorded")
             all_view_commands = methods.create_views(missing_views, database_name)
@@ -108,18 +100,16 @@ def record_data_from_csv(database_name, csv_file):
                     methods.cleanup_directory(csv_file, json_file_path, 0)
                 else:
                     print("View creation unsuccessful, a new conflict document is being created.")
-                    return "View creation unsuccessful"
                     methods.cleanup_directory(csv_file, json_file_path, 1)
         else:
-            return 2
             print("Data recording unsuccessful, a new conflict document is being created.")
-            return "Data recording unsuccessful"
             methods.cleanup_directory(csv_file, json_file_path, 1)
         ssh_disconnect(ssh)
     except paramiko.ssh_exception.SSHException:
         return 1
-
+    return 'Complete Success'
 
 if __name__ == '__main__':
     create_database("Hello_World")
     record_data_from_csv("hello_world", "climate_data.csv")
+

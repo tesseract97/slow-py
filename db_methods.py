@@ -74,7 +74,7 @@ def find_view_names(data_file_path):
         The reader object that has taken all the headings of the CSV file
     """
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    csv_file_path = dir_path + "/" + data_file_path
+    csv_file_path = dir_path + "\\" + data_file_path
     if os.path.exists(csv_file_path):
         with open(csv_file_path, encoding='utf-8-sig') as csv_file:
             csv_reader = csv.reader(csv_file)
@@ -155,9 +155,10 @@ def create_views(missing_views, database):
     isn't necessary in a CSV that follows specifications in the README.md
 
     """
+
     if missing_views == []:
         print("All views have design documents")
-        return ""
+        return 0
 
     view_commands = []
     for new_view in missing_views:
@@ -208,7 +209,7 @@ def csv_to_json(data_file_path, json_file_path):
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
     os.chmod(dir_path, 0o777)
-    csv_file_path = dir_path + "/" + data_file_path
+    csv_file_path = dir_path + "\\" + data_file_path
     if os.path.isfile(csv_file_path):
         with open(csv_file_path, encoding='utf-8-sig') as csv_file:
             csv_reader = csv.DictReader(csv_file)
@@ -219,8 +220,8 @@ def csv_to_json(data_file_path, json_file_path):
             json_file.write(json.dumps(data, indent=4))
             json_file.close()
             csv_file.close()
-            return "File does exist"
-    return "File doesn't exist"
+            return 0
+    return 1
 
 
 def format_and_make_string(code, json_file_path):
@@ -252,7 +253,7 @@ def format_and_make_string(code, json_file_path):
 
     Right now, all data fields are written to the database as strings.
     """
-    if code == "File does exist":
+    if code == 0:
 
         f = open(json_file_path)
         data = json.load(f)
@@ -264,7 +265,7 @@ def format_and_make_string(code, json_file_path):
         f.close()
         return '"' + string + '"'
     else:
-        return "File doesn't exist"
+        return ""
 
 
 def write_to_database(data, database_name):
@@ -293,8 +294,8 @@ def write_to_database(data, database_name):
     """
 
     database = database_name
-    if data == "File doesn't exist":
-        return "File doesn't exist"
+    if data == "":
+        return 1
 
     command = 'curl -X POST http://admin:x3n0ntpc@127.0.0.1:5984//_bulk_docs -d  -H "Content-Type: application/json"'
     command = command[:50] + database + command[50:65] + data + command[65:]
@@ -322,6 +323,8 @@ def cleanup_directory(data_file_path, json_file_path, error_code):
     else:
         print("JSON already deleted")
 
+	dir_path = os.path.dirname(os.path.realpath(__file__))
+	csv_file_path = dir+path + "\\" + data_file_path
     if error_code == 0:
         csv_file = data_file_path
         if os.path.exists(csv_file):
@@ -332,7 +335,6 @@ def cleanup_directory(data_file_path, json_file_path, error_code):
     else:
         if os.path.exists(data_file_path):
             new_name = os.path.splitext(data_file_path)[0] + "_conflict.csv"
-            os.close(data_file_path)
             os.renames(data_file_path, new_name)
             print("CSV renamed")
         else:
