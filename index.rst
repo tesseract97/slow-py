@@ -12,23 +12,13 @@ SlowControlDB Documentation
 
 Create Your Database
 ====================
-.. automodule:: create_database
-.. autoclass:: StartDBConnection
+.. automodule:: db_methods
    :members:
 
 Use Your Database
 =================
-.. automodule:: slow_control
-.. autoclass:: SlowControlDBConnection
+.. automodule:: db_module
    :members:
-
-View Your Database
-==================
-.. autoclass:: DesignDocs
-   :members:
-
-
-
 
 
 Index
