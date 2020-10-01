@@ -7,6 +7,30 @@ import db_methods as methods
 
 # SSH FUNCTIONS
 def ssh_connect(hostname='132.206.126.208', port=2020, username='lolx', password='x3n0ntpc'):
+    """
+    Creates the initial ssh connection to the CouchDB database on the lolx computer using Paramiko.
+
+
+    Parameters
+    ----------
+    hostname : str
+        (default is '132.206.126.208')
+        Address of the host.
+    port : int
+        (default is 2020)
+        Port of the host.
+    username : str
+        (default is 'lolx')
+        Username to make ssh connection.
+    password : str
+        (default is 'x3n0ntpc')
+        Password to make ssh connection.
+
+    Returns
+    -------
+    ssh : class
+        SSH instance is returned for later access.
+    """
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(hostname, port, username, password)
@@ -14,6 +38,21 @@ def ssh_connect(hostname='132.206.126.208', port=2020, username='lolx', password
 
 
 def ssh_execute(ssh, command):
+    """
+    Executes ssh command from input string.
+
+    Parameters
+    ----------
+    ssh : class
+        SSH instance that provides access to the database
+    command : str
+        Desired command as a string that must be executed by paramiko.
+    Returns
+    -------
+    :int
+        A nonzero value indicates error on a range with one typically being informational and not program halting
+        but two being catastrophic and program halting.
+    """
     stdin, stdout, stderr = ssh.exec_command(command, get_pty=True)
     for line in stdout.readlines():
         result = json.loads(line)
@@ -47,6 +86,18 @@ def ssh_execute(ssh, command):
 
 
 def ssh_disconnect(ssh):
+    """
+    Closes SSH instance.
+
+    Parameters
+    ----------
+    ssh : class
+        SSH instance that provides access to the database
+    Returns
+    -------
+    :int
+        A zero value indicates task completion.
+    """
     ssh.close()
     return 0
 
@@ -54,6 +105,28 @@ def ssh_disconnect(ssh):
 # MAIN FUNCTIONS
 
 def create_database(database_name):
+    """
+    Creates and initializes database with the create_database and create_first view functions.
+
+    The database needs a dummy view to initialize it in order to easily add custom views later.
+
+    Parameters
+    ----------
+    database_name: str
+        Desired name of database.
+    Returns
+    -------
+    :int
+        A nonzero value indicates an error code.
+    Throws
+    -----
+    SSHException
+        An issue with the ssh connection occurred.
+    Notes
+    -----
+    The name of database is corrected to be lowercase because that's all that CouchDB allows and it's one of the most
+    common initial errors.
+    """
     name = database_name.lower()
     db_command = methods.create_database(name)
     view_command = methods.create_first_view(name)
@@ -68,6 +141,33 @@ def create_database(database_name):
 
 
 def record_data_from_csv(database_name, csv_file):
+    """
+    Records data from csv into the database with an optional conflict directory.
+
+    Parameters
+    ----------
+    database_name: str
+        Desired name of database.
+    csv_file :str
+        CSV file name.
+    abs_file_path: str
+        Absolute file path to CSV.
+    conflict_dir: str
+        Name of the directory where the CSV will be deposited if any errors occur.
+    Returns
+    -------
+    :int
+        A nonzero value indicates an error code with two signifying catastrophic failure and one signifying a failure
+        that may be informational instead of breaking the code.
+    Throws
+    -----
+    SSHException
+        An issue with the ssh connection occurred.
+    Notes
+    -----
+    The name of database is corrected to be lowercase because that's all that CouchDB allows and it's one of the most
+    common initial errors.
+    """
     dir_path = os.path.dirname(os.path.realpath(__file__))
     json_file_path = dir_path + "\\" + os.path.splitext(csv_file)[0] + ".json"
     json_file = methods.csv_to_json(csv_file, json_file_path)
@@ -80,11 +180,12 @@ def record_data_from_csv(database_name, csv_file):
         return 1
     try:
         ssh = ssh_connect()
-        existing_views = methods.return_existing_views(ssh, database_name)
+        name = database_name.lower()
+        existing_views = methods.return_existing_views(ssh, name)
         missing_views = methods.compare_views(headers, existing_views)
         if ssh_execute(ssh, data_command) < 2:
             print("Data successfully recorded")
-            all_view_commands = methods.create_views(missing_views, database_name)
+            all_view_commands = methods.create_views(missing_views, name)
             if all_view_commands == 0:
                 print("No new views necessary")
                 print("Data successfully recorded and indexed")

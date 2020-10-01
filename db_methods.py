@@ -15,11 +15,12 @@ def create_database(database_name):
 
     Parameters
     ----------
-
+    database_name:str
+        Desired name of the database
     Returns
     -------
-    int
-        Non-zero value indicates error code
+    command:str
+        Returns the curl string to create database with desired name.
     """
     database = database_name
     command = 'curl -X PUT http://admin:x3n0ntpc@127.0.0.1:5984/'
@@ -31,15 +32,21 @@ def create_first_view(database_name):
     """
     Creates a design document to initialize the database.
 
-    The point of this function is to create a placeholder design document that makes it easier
-    for slow_control.py to add design documents when data is added. Because of this, the design
-    document being created simply returns timestamp as a key and value if the document has
-    timestamp as an attribute.
+    The point of this function is to create a placeholder design document so that custom design documents can be added
+    afterwards. Because of this, the design document being created simply returns timestamp as a key and value.
 
     Parameters
     ----------
-
+    database_name:str
+        Database desired to be initialized.
+    Returns
+    -------
+        Returns curl command that initializes the database by creating the first view statement.
+    Notes
+    -----
+    This view returns a (key, value) pair of (timestamp, timestamp), as timestamp is the only universal field by definition.
     """
+
     database = database_name
     view_func = "function(doc) { if(doc.timestamp) emit(doc.timestamp, doc.timestamp)}"
 
@@ -72,6 +79,9 @@ def find_view_names(data_file_path):
         Non-zero value indicates an error
     headers : object
         The reader object that has taken all the headings of the CSV file
+    Notes
+    -----
+    Rows that have been commented out with '#' won't be included.
     """
     dir_path = os.path.dirname(os.path.realpath(__file__))
     csv_file_path = dir_path + "\\" + data_file_path
@@ -104,6 +114,10 @@ def return_existing_views(ssh, database):
     -------
     views: list
         An array holding all the headers that are already in design documents.
+    Notes
+    -----
+    An empty array will be passed through if no views are found.
+    This signifies an error, because at least one view should have been created when the database was initialized.
     """
 
     command = 'curl -X GET http://admin:x3n0ntpc@127.0.0.1:5984//_design_docs'
@@ -119,6 +133,24 @@ def return_existing_views(ssh, database):
 
 
 def compare_views(headers, db_views):
+    """
+    Compares all the headings of the CSV file with views already in the database.
+
+    Returns all headings that aren't currently views so that they can be added later.
+
+    Parameters
+    ----------
+    headers : list
+        List of all the headings of the original CSV file.
+    db_views: list
+        List of all headings already covered by views in the database.
+    Returns
+    -------
+    :int
+        A zero return value indicates all heading are covered by views.
+    missing_views: list
+        A list of all headings that need views to be created.
+    """
     if set(headers).issubset(set(db_views)):
         print("Success")
         return []
@@ -140,20 +172,22 @@ def create_views(missing_views, database):
     Creates design documents with view functions for headers from the CSV that didn't already have
     design documents.
 
-
     Parameters
     ----------
-    missing_views : array.pyi
+    missing_views : list
         Contains all headers that don't have design documents.
 
     database : str
         The name of the desired database to deposit data
-
+    Returns
+    -------
+    view_commands : str
+        A string command that will create all desired view statements.
     Notes
     -----
-    The commented line in the first paragraph was formatting specifically for the test data I was using,
-    isn't necessary in a CSV that follows specifications in the README.md
-
+    If there are no missing views (an input of zero from the last function), zero will be returned again to indicate
+    that no design documents needed to be added.
+    The key for every view function is timestamp with the value being the header title.
     """
 
     if missing_views == []:
@@ -180,7 +214,7 @@ def csv_to_json(data_file_path, json_file_path):
     Converts the CSV of data to a JSON file with the intention of writing the JSON directly to the
     desired database.
 
-    First, os checks that `csv_file_path` exists. If not, an error code is returned. If it does, the
+    First, os checks that csv at `abs_file_path` exists. If not, an error code is returned. If it does, the
     csv file is opened and each row is turned into a python dictionary as an intermediary step. The
     id of each document is set to be the same as the timestamp, and the dictionaries are converted to
     a JSON file which is named `json_file_path` and added to the project folder.
@@ -188,22 +222,19 @@ def csv_to_json(data_file_path, json_file_path):
 
     Parameters
     ----------
-    self.data_file_path: str
+    data_file_path: str
         The name of the csv file containing the data in the project folder.
-    self.json_file_path : str
+    json_file_path : str
         The name to assign to the data once it's been converted from csv to json
-        (The default is 'west_island_update.json')
     Returns
     -------
     int
         Non-zero value indicates error code.
-
-
     Notes
     -----
-    Even though `csv_file_path` and `json_file_path` are called paths, they're names of files.
-    If the csv or json files were ever stored anywhere other than the project folder, the code must be
-    changed to redirect.
+    All lines in the csv that have been commented out with '#' are ignored.
+    Opportunity for the code to provide the absolute file path from relative file path or for the
+    absolute file path to just be input.
     """
     data = []
 
@@ -269,7 +300,7 @@ def format_and_make_string(code, json_file_path):
 
 
 def write_to_database(data, database_name):
-    """
+    """"
     Writes the formatted string to the specified database using a curl command.
 
     The database name and data are entered into the curl command by appending strings. Then the
@@ -310,10 +341,13 @@ def cleanup_directory(data_file_path, json_file_path, error_code):
 
     Parameters
     ----------
-    self.json_file_path : str
+    json_file_path : str
         Gives the name of the json file that contains the now-stored data
-    self.csv_file_path : str
+    data_file_path : str
         Gives the name of the csv file that stored the now-stored data
+    error_code: int
+        Tells whether there were any issues to determine if the data should be stored in conflict
+        folder for further analysis or deleted
     """
 
     json_file = json_file_path
@@ -323,10 +357,10 @@ def cleanup_directory(data_file_path, json_file_path, error_code):
     else:
         print("JSON already deleted")
 
-	dir_path = os.path.dirname(os.path.realpath(__file__))
-	csv_file_path = dir+path + "\\" + data_file_path
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    csv_file_path = dir_path + "\\" + data_file_path
     if error_code == 0:
-        csv_file = data_file_path
+        csv_file = csv_file_path
         if os.path.exists(csv_file):
             os.remove(csv_file)
             print("CSV deleted")
